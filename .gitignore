@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.local.env
+config/local*
+.claude/
+.codex/
+
+# Source and derived research data are intentionally not redistributed.
+data/*
+!data/README.md
+!data/work/
+data/work/*
+!data/work/*.py
+!data/work/geo/
+data/work/geo/*
+!data/work/geo/*.py
+
+# Generated outputs and upstream documents
+outputs/
+reports/
+*.pdf
+*.zip
+*.7z
+*.xlsx
+*.xls
+*.db
+*.sqlite
+*.sqlite3
+*.parquet
+*.jsonl
+*.csv
+*.tsv
+*.shp
+*.shx
+*.dbf
+*.prj
+*.log
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

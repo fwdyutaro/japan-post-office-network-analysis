@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "postal-office-network-analysis-japan"
+version = "1.0.0"
+description = "Auditable code for analysing changes in Japan's post-office network"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {file = "LICENSE"}
+authors = [{name = "Yutaro KTR"}]
+dependencies = ["requests>=2.31"]
+
+[project.optional-dependencies]
+analysis = [
+  "numpy>=2.0",
+  "scipy>=1.14",
+  "pandas>=2.2",
+  "openpyxl>=3.1",
+  "pyshp>=2.3",
+  "pyproj>=3.7",
+]
+dev = []
+
+[project.scripts]
+postal-bias = "postal_bias.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,74 @@
+# 日本の郵便局ネットワーク分析
+
+note記事「[郵便局は『減っていない』のか――全国平均が隠す、局地的な空洞化](https://note.com/fwd_yutaro/n/n7b00a82e6db5)」の調査で使用した、郵便局データの取得管理・検証・時系列復元・地域集計・可視化のコードです。
+
+このリポジトリの目的は、記事の数値を無条件に正しいものとして配布することではなく、処理方法を検査可能にすることです。公開資料の取得時点、採用・除外規則、未評価の論点をコードと文書に残しています。
+
+## 収録範囲
+
+- `src/postal_bias/`: 取得方針、manifest、PDF解析、履歴復元、照合、地理・集計、成果物検証
+- `data/work/*.py`: 記事の集計・図表生成に用いた分析スクリプト
+- `data/work/geo/*.py`: 距離・位置・空間集計の補助スクリプト
+- `tests/`: 一時ディレクトリと合成fixtureを使う単体テスト
+- `docs/methodology.md`: 記事の分析フロー、解釈上の限界
+- `DATA_POLICY.md`: 元データと生成物の公開方針
+
+元のPDF、郵便局住所・座標の個票、国土数値情報・位置参照情報・国勢調査のデータ、解析途中の台帳、`public_release_allowed: false` または `internal_only` とされた成果物、記事原稿と画像は収録していません。
+
+## セットアップ
+
+Python 3.12以上を使用します。
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[analysis]"
+```
+
+PDF解析の一部には、別途Popplerの `pdftotext` が必要です。実行時にローカルの実行ファイルを明示してください。
+
+## テスト
+
+テストは外部サイトへアクセスせず、合成データと一時ディレクトリを使います。
+
+```powershell
+$env:PYTHONPATH='src'
+python -m unittest discover -s tests -v
+```
+
+取得処理を試す前に、対象サイトの利用条件とrobots.txtを確認してください。ライブ取得は、研究用の連絡先と識別可能なUser-Agentを明示し、コード側の確認フラグを有効にした場合だけ実行されます。
+
+## 記事の再現について
+
+完全な再計算には、利用者自身が提供元から取得した入力ファイルが必要です。公開スクリプトはリポジトリのルートを既定値として使い、次の環境変数で研究プロジェクト全体のルートを変更できます。
+
+```powershell
+$env:POSTAL_BIAS_PROJECT_ROOT='D:\your\postal-project'
+```
+
+入力・中間生成物・出力は、そのルート直下の `data/` に配置されます。個別スクリプトのうち `project_paths.py` の専用helperを明示的に使うものだけが、追加のパス環境変数に対応します。
+
+記事の主な入力元は次のとおりです。取得日・対象時点・ハッシュ値を各自で記録してください。
+
+- [日本郵便「法第6条第2項の規定による届出」](https://www.post.japanpost.jp/newsrelease/storeinformation/)
+- [日本郵便「郵便局局数情報（オープンデータ）」](https://www.post.japanpost.jp/newsrelease/storeinformation/index02.html)
+- [国土数値情報 郵便局データ P30](https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P30.html)
+- [国土交通省 位置参照情報](https://nlftp.mlit.go.jp/isj/)
+- [e-Stat 令和2年国勢調査・地域メッシュ統計](https://www.e-stat.go.jp/gis/statmap-search?page=1&type=1&toukeiCode=00200521)
+- [総務省 過疎地域市町村等一覧](https://www.soumu.go.jp/main_sosiki/jichi_gyousei/c-gyousei/2001/kaso/kasomain0.htm)
+
+入力ファイルの配置契約と生成順序は [分析方法](docs/methodology.md) を参照してください。現時点の公開版は「コードと検証規則の公開」を目的としており、数GB規模の非公開入力を自動取得して記事をワンコマンドで再生成する配布物ではありません。
+
+## 重要な限界
+
+- 届出上存在する局数と、実際に営業している局数を区別しています。
+- 市区町村ごとの0局判定は、法令適合性の判定ではありません。
+- 過疎地の定義と法令上の区域・基準日は一致するとは限りません。
+- 最寄局距離は測地線距離による感度分析で、道路距離や公共交通の所要時間ではありません。
+- 座標移転補正は未評価部分を含み、記事の複数値を真値の上下限とはみなしません。
+
+したがって、このコードと記事は、郵便局設置に関する法令適合性を判定するものではありません。
+
+## ライセンス
+
+コードは [MIT License](LICENSE) です。元データと生成物にはMIT Licenseは適用されません。必ず [DATA_POLICY.md](DATA_POLICY.md) と各提供元の最新の利用条件を確認してください。
